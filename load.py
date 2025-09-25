@@ -5,10 +5,12 @@ import os
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
-    filename="load.log"
+    handlers=[
+        logging.FileHandler("load.log"), #Write to file
+        logging.StreamHandler() #Print to Console
+    ]
 )
 logger = logging.getLogger(__name__)
-
 DB_FILE = "nyc_taxi.duckdb" #Name of the duckdb database file
 BUCKET = "nyc-taxi-2015-2024-djhan" #My bucket name
 REGION = "us-east-1"
@@ -42,8 +44,8 @@ def load_taxi_data(con, taxi_type, start_year = 2015, end_year = 2024):
     print(f"{table_name}: {count:,} rows")
     logger.info(f"Final row count for {table_name}: {count:,}")
 
-    #Final row count for yellow_2024: 41,169,720
-    #Final row count for green_2024: 660,218
+    #Final row count for yellow_all: 752,830,638 rows
+    #Final row count for green_all: 67,647,679 rows
 
 
 def load_emissions(con):
