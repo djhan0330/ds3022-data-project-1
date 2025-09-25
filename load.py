@@ -9,30 +9,33 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-DB_FILE = "nyc_taxi.duckdb"
-BUCKET = "nyc-taxi-2015-2024-djhan"
+DB_FILE = "nyc_taxi.duckdb" #Name of the duckdb database file
+BUCKET = "nyc-taxi-2015-2024-djhan" #My bucket name
 REGION = "us-east-1"
 
-def load_taxi_data(con, taxi_type):
-    table_name = f"{taxi_type}_2024"
+def load_taxi_data(con, taxi_type, start_year = 2015, end_year = 2024):
+    table_name = f"{taxi_type}_all"
     created = False
 
-    for month in range(1, 13):
-        path = f"s3://{BUCKET}/raw/{taxi_type}_tripdata_2024-{month:02d}.parquet"
+    for year in range (start_year, end_year + 1):
+        for month in range(1, 13):
+            path = f"s3://{BUCKET}/raw/{taxi_type}_tripdata_{year}-{month:02d}.parquet"
 
-        if not created:
-            con.execute(f"""
-                CREATE OR REPLACE TABLE {table_name} AS
-                SELECT * FROM read_parquet('{path}', union_by_name=true)
-            """)
-            created = True
-            logger.info(f"Created {table_name} with {path}")
-        else:
-            con.execute(f"""
-                INSERT INTO {table_name}
-                SELECT * FROM read_parquet('{path}', union_by_name=true)
-            """)
-            logger.info(f"Inserted {path} into {table_name}")
+            if not created:
+                con.execute(f"""
+                    CREATE OR REPLACE TABLE {table_name} AS
+                    SELECT *, {year} AS year
+                    FROM read_parquet('{path}', union_by_name=true)
+                """)
+                created = True
+                logger.info(f"Created {table_name} with {path}")
+            else:
+                con.execute(f"""
+                    INSERT INTO {table_name}
+                    SELECT *, {year} AS year
+                    FROM read_parquet('{path}', union_by_name=true)
+                """)
+                logger.info(f"Inserted {path} into {table_name}")
 
     # Row count
     count = con.execute(f"SELECT COUNT(*) FROM {table_name}").fetchone()[0]
