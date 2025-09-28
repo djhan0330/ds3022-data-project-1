@@ -3,7 +3,7 @@ taxi_co2:
   outputs:
     dev:
       type: duckdb
-      path: ''
+      path: '/home/ubuntu/ds3022-data-project-1/nyc_taxi.duckdb'
       schema: main
       threads: 4
       keepalives_idle: 0
