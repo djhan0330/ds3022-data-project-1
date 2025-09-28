@@ -40,7 +40,7 @@ def clean_table(con, table_name):
                     """)
     
     count = con.execute(f"SELECT COUNT(*) FROM {clean_table_name}").fetchone()[0]
-    print(f"{clean_table_name}: {count:, } rows")
+    print(f"{clean_table_name}: {count:,} rows")
     logger.info(f"Finished Cleaning {table_name}. Rows kept {count:,}")
 
     tests = {
