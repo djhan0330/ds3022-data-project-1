@@ -25,12 +25,14 @@ def clean_table(con, table_name):
         dropoff_col = "lpep_dropoff_datetime"
     else:
         raise ValueError(f"Unknown taxi type in {table_name}")
+    
+    essential_cols = f"""{pickup_col}, {dropoff_col}, passenger_count, trip_distance,
+                        fare_amount, total_amount, PULocationID, DOLocationID"""
 
     con.execute(f"""
                 CREATE OR REPLACE TABLE {clean_table_name} AS
-                SELECT * FROM (
-                    SELECT DISTINCT * 
-                    FROM {table_name})
+                SELECT DISTINCT {essential_cols}
+                FROM {table_name}
                 WHERE passenger_count > 0
                     AND trip_distance > 0 
                     AND trip_distance <= 100
@@ -39,7 +41,7 @@ def clean_table(con, table_name):
     
     count = con.execute(f"SELECT COUNT(*) FROM {clean_table_name}").fetchone()[0]
     print(f"{clean_table_name}: {count:, } rows")
-    logger.info(f"Finished Cleaning {table_name}. Rows kept{count:,}")
+    logger.info(f"Finished Cleaning {table_name}. Rows kept {count:,}")
 
     tests = {
         "zero_passengers": f"SELECT COUNT(*) FROM {clean_table_name} WHERE passenger_count = 0",
