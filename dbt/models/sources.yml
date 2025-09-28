@@ -1,6 +1,8 @@
 version: 2
 
 sources:
-  - name: main          # this matches your schema (DuckDB default = "main")
+  - name: main          #(DuckDB default = "main")
     tables:
       - name: vehicle_emissions
+      - name: yellow_clean
+      - name: green_clean
