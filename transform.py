@@ -1,2 +1,1 @@
-import duckdb
-import logging
+#I have used DBT instead of script -> You can check it in dbt/models. 
