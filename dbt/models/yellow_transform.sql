@@ -3,9 +3,10 @@
 
 --Create a CTE named emissions, pulling all rows from the vehicle_emissions table
 WITH emissions AS (
-    SELECT * FROM {{ ref('vehicle_emissions') }}
+    SELECT * FROM {{ source('main', 'vehicle_emissions') }}
 ),
-yellow AS (SELECT * FROM {{ ref('yellow_clean')}}
+yellow AS (
+    SELECT * FROM {{ source('main', 'yellow_clean') }}
 )
 
 SELECT

@@ -1,10 +1,10 @@
 {{ config(materialized='table', schema='main') }}
 
 WITH emissions AS (
-    SELECT * FROM {{ ref('vehicle_emissions') }}
+    SELECT * FROM {{ source('main', 'vehicle_emissions') }}
 ),
 green AS (
-    SELECT * FROM {{ ref('green_clean') }}
+    SELECT * FROM {{ source('main', 'green_clean') }}
 )
 
 SELECT
