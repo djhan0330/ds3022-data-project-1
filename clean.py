@@ -55,3 +55,15 @@ def clean_table(con, table_name):
         result = con.execute(sql).fetchone()[0]
         print(f"Test {name}: {result} violations")
         logger.info(f"Test {name}: {result} violations")
+
+def main():
+    con = duckdb.connect("nyc_taxi.duckdb")
+    clean_table(con, "yellow_all")
+    clean_table(con, "green_all")
+
+    con.close()
+
+if __name__ == "__main__":
+    logger.info("Starting clean.py")
+    main()
+    logger.info("Completed clean.py")
