@@ -18,66 +18,73 @@ def analysis():
     con = duckdb.connect(DB_FILE)
 
     queries = {
-        "largest_trip": """
-            SELECT 'YELLOW' AS cab_type, MAX(trip_co2_kgs) AS max_co2
+    "largest_trip": """
+        SELECT 'YELLOW' AS cab_type, MAX(trip_co2_kgs) AS max_co2
+        FROM main_main.yellow_transform
+        UNION ALL
+        SELECT 'GREEN' AS cab_type, MAX(trip_co2_kgs)
+        FROM main_main.green_transform;
+    """,
+    "heavy_light_hour": """
+        SELECT cab_type, hour_of_day, AVG(trip_co2_kgs) AS avg_co2
+        FROM (
+            SELECT 'YELLOW' AS cab_type, hour_of_day, trip_co2_kgs
             FROM main_main.yellow_transform
             UNION ALL
-            SELECT 'GREEN', MAX(trip_co2_kgs)
-            FROM main_main.green_transform;
-        """,
-        "heavy_light_hour": """
-            SELECT cab_type, hour_of_day, AVG(trip_co2_kgs) AS avg_co2
-            FROM (
-                SELECT 'YELLOW' AS cab_type, hour_of_day, trip_co2_kgs
-                FROM main_main.yellow_transform
-                UNION ALL
-                SELECT 'GREEN', hour_of_day, trip_co2_kgs
-                FROM main_main.green_transform
-            )
-            GROUP BY cab_type, hour_of_day
-            ORDER BY cab_type, avg_co2;
-        """,
-        "heavy_light_day": """
-            SELECT cab_type, day_of_week, AVG(trip_co2_kgs) AS avg_co2
-            FROM (
-                SELECT 'YELLOW', day_of_week, trip_co2_kgs FROM main_main.yellow_transform
-                UNION ALL
-                SELECT 'GREEN', day_of_week, trip_co2_kgs FROM main_main.green_transform
-            )
-            GROUP BY cab_type, day_of_week
-            ORDER BY cab_type, avg_co2;
-        """,
-        "heavy_light_week": """
-            SELECT cab_type, week_of_year, AVG(trip_co2_kgs) AS avg_co2
-            FROM (
-                SELECT 'YELLOW', week_of_year, trip_co2_kgs FROM main_main.yellow_transform
-                UNION ALL
-                SELECT 'GREEN', week_of_year, trip_co2_kgs FROM main_main.green_transform
-            )
-            GROUP BY cab_type, week_of_year
-            ORDER BY cab_type, avg_co2;
-        """,
-        "heavy_light_month": """
-            SELECT cab_type, month_of_year, AVG(trip_co2_kgs) AS avg_co2
-            FROM (
-                SELECT 'YELLOW', month_of_year, trip_co2_kgs FROM main_main.yellow_transform
-                UNION ALL
-                SELECT 'GREEN', month_of_year, trip_co2_kgs FROM main_main.green_transform
-            )
-            GROUP BY cab_type, month_of_year
-            ORDER BY cab_type, avg_co2;
-        """,
-        "monthly_totals": """
-            SELECT 'YELLOW' AS cab_type, month_of_year, SUM(trip_co2_kgs) AS total_co2
-            FROM main_main.yellow_transform
-            GROUP BY month_of_year
-            UNION ALL
-            SELECT 'GREEN', month_of_year, SUM(trip_co2_kgs)
+            SELECT 'GREEN' AS cab_type, hour_of_day, trip_co2_kgs
             FROM main_main.green_transform
-            GROUP BY month_of_year
-            ORDER BY cab_type, month_of_year;
-        """
-    }
+        )
+        GROUP BY cab_type, hour_of_day
+        ORDER BY cab_type, avg_co2;
+    """,
+    "heavy_light_day": """
+        SELECT cab_type, day_of_week, AVG(trip_co2_kgs) AS avg_co2
+        FROM (
+            SELECT 'YELLOW' AS cab_type, day_of_week, trip_co2_kgs
+            FROM main_main.yellow_transform
+            UNION ALL
+            SELECT 'GREEN' AS cab_type, day_of_week, trip_co2_kgs
+            FROM main_main.green_transform
+        )
+        GROUP BY cab_type, day_of_week
+        ORDER BY cab_type, avg_co2;
+    """,
+    "heavy_light_week": """
+        SELECT cab_type, week_of_year, AVG(trip_co2_kgs) AS avg_co2
+        FROM (
+            SELECT 'YELLOW' AS cab_type, week_of_year, trip_co2_kgs
+            FROM main_main.yellow_transform
+            UNION ALL
+            SELECT 'GREEN' AS cab_type, week_of_year, trip_co2_kgs
+            FROM main_main.green_transform
+        )
+        GROUP BY cab_type, week_of_year
+        ORDER BY cab_type, avg_co2;
+    """,
+    "heavy_light_month": """
+        SELECT cab_type, month_of_year, AVG(trip_co2_kgs) AS avg_co2
+        FROM (
+            SELECT 'YELLOW' AS cab_type, month_of_year, trip_co2_kgs
+            FROM main_main.yellow_transform
+            UNION ALL
+            SELECT 'GREEN' AS cab_type, month_of_year, trip_co2_kgs
+            FROM main_main.green_transform
+        )
+        GROUP BY cab_type, month_of_year
+        ORDER BY cab_type, avg_co2;
+    """,
+    "monthly_totals": """
+        SELECT 'YELLOW' AS cab_type, month_of_year, SUM(trip_co2_kgs) AS total_co2
+        FROM main_main.yellow_transform
+        GROUP BY month_of_year
+        UNION ALL
+        SELECT 'GREEN' AS cab_type, month_of_year, SUM(trip_co2_kgs)
+        FROM main_main.green_transform
+        GROUP BY month_of_year
+        ORDER BY cab_type, month_of_year;
+    """
+}
+
 
     #Running the query
     for name, sql in queries.items():
