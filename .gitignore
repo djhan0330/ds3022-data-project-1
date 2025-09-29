@@ -1,5 +1,5 @@
 # Ignore app.log
-app.log
+*.log
 data/
 venv/
 *.duckdb
